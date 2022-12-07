@@ -54,12 +54,15 @@ def train(batch_size=32):
     model_checkpoint = "bert-base-cased"
     tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, cache_dir=os.path.join(root, "cached_models"))
     tokenized_dataset, data_collator, ner_labels, id2label, label2id = prepare_data(tokenizer)
+    print(ner_labels)
+    print(label2id)
+    print(id2label)
     model = AutoModelForTokenClassification.from_pretrained(
         model_checkpoint,
         num_labels=len(ner_labels),
         id2label=id2label,
         label2id=label2id,
-        cache_dir=os.path.join(root, "cached_models")
+        cache_dir=os.path.join(root, "cached_models_2")
     )
     metric = load_metric("seqeval")
 
@@ -87,4 +90,4 @@ def train(batch_size=32):
 
 
 if __name__ == '__main__':
-    train(32)
+    train(1)

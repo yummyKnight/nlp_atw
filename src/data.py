@@ -42,7 +42,20 @@ def align_labels_and_tokens(word_ids, labels):
 
 
 def prepare_data(tokenizer):
-    raw_dataset = load_dataset("conll2003", cache_dir=os.path.join(root, "cached_data"))
+
+    dataset_config = {
+        "LOADING_SCRIPT_FILES": os.path.join(root, "src/medical_ner_ds.py"),
+        "CONFIG_NAME": "clean",
+        "DATA_DIR": os.path.join(root, "data"),
+        # "CACHE_DIR": os.path.join(root, "cache_crema"),
+    }
+    raw_dataset = load_dataset(
+        dataset_config["LOADING_SCRIPT_FILES"],
+        dataset_config["CONFIG_NAME"],
+        data_dir=dataset_config["DATA_DIR"],
+        # cache_dir=dataset_config["CACHE_DIR"]
+    )
+    # raw_dataset = load_dataset("conll2003", cache_dir=os.path.join(root, "cached_data"))
     ner_labels, id2label, label2id = get_ner_info(raw_dataset)
     print_ds_statistics(raw_dataset)
     # tokenize
