@@ -54,9 +54,6 @@ def train(batch_size=32):
     model_checkpoint = "bert-base-cased"
     tokenizer = AutoTokenizer.from_pretrained(model_checkpoint, cache_dir=os.path.join(root, "cached_models"))
     tokenized_dataset, data_collator, ner_labels, id2label, label2id = prepare_data(tokenizer)
-    print(ner_labels)
-    print(label2id)
-    print(id2label)
     model = AutoModelForTokenClassification.from_pretrained(
         model_checkpoint,
         num_labels=len(ner_labels),
@@ -69,10 +66,11 @@ def train(batch_size=32):
     args = TrainingArguments(
         model_checkpoint,
         evaluation_strategy="epoch",
-        learning_rate=2e-5,
+        learning_rate=1e-5,
+        save_strategy="no",
         per_device_train_batch_size=batch_size,
         per_device_eval_batch_size=batch_size,
-        num_train_epochs=3,
+        num_train_epochs=100,
         weight_decay=0.01,
         report_to="tensorboard"
     )
@@ -87,7 +85,8 @@ def train(batch_size=32):
         compute_metrics=partial_compute_metrics,
     )
     trainer.train()
+    trainer.save_model("best_model/")
 
 
 if __name__ == '__main__':
-    train(1)
+    train(10)

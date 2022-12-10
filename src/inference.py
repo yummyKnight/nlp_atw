@@ -13,12 +13,12 @@ root = pyrootutils.setup_root(
 def inference():
     # Loading the pipeline from hub
     # Pipeline handles the preprocessing and post processing steps
-    model_checkpoint = os.path.join(root, "bert-base-cased/checkpoint-1000")
+    model_checkpoint = os.path.join(root, "src/best_model")
     namedEntityRecogniser = pipeline(
         "token-classification", model=model_checkpoint, aggregation_strategy="simple"
     )
 
-    text = "Mark Zuckerberg is one of the founders of Facebook, a company from the United States"
+    text = "While bismuth compounds (Pepto-Bismol) decreased the number of bowel movements in those with travelers' diarrhea"
     sample_output = namedEntityRecogniser([text])
     print(sample_output)
 

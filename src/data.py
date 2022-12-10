@@ -34,9 +34,9 @@ def align_labels_and_tokens(word_ids, labels):
             updated_labels.append(-100)
         else:
             label = labels[word_id]
-            # B-XXX to I-XXX for subwords (Inner entities)
-            if label % 2 == 1:
-                label += 1
+            # # B-XXX to I-XXX for subwords (Inner entities)
+            # if label % 2 == 1:
+            #     label += 1
             updated_labels.append(label)
     return updated_labels
 
@@ -65,11 +65,21 @@ def prepare_data(tokenizer):
         batched=True,
         remove_columns=raw_dataset["train"].column_names
     )
+
     data_collator = DataCollatorForTokenClassification(
         tokenizer=tokenizer
     )
-
     return tokenized_dataset, data_collator, ner_labels, id2label, label2id
+
+def check_ner_tags(raw_dataset_train):
+    min_tag = 10
+    max_tag = -1
+    for sen in raw_dataset_train:
+        max_tag = max(max_tag, *sen["ner_tags"])
+        min_tag = min(min_tag, *sen["ner_tags"])
+
+    print("Min tag:", min_tag)
+    print("Max tag:", max_tag)
 
 
 def tokenize_and_align_labels(dataset, tokenizer):
@@ -98,14 +108,27 @@ def test_tokenizer(raw_dataset, tokenizer):
     print("Start tokenizing")
     print("Tokens: ", sample_input.tokens())
     print("Word Ids: ", sample_input.word_ids())
-
-
+    sample_labels = raw_dataset["train"][0]["ner_tags"]
+    print("After align fix")
+    aligned = align_labels_and_tokens(sample_input.word_ids(), sample_labels)
+    f = list(filter(lambda x: x[0] != 0, zip(aligned, sample_input.tokens())))
+    aligned_f, tokens_f = zip(*f)
+    print("Tokens without zeros:")
+    print(tokens_f)
+    print("Tags without zeros:")
+    print(aligned_f)
 def print_ds_statistics(raw_dataset):
     print("Upper DS struct:")
     print(raw_dataset)
     print("Dataset struct")
     print("Tokens: ", raw_dataset["train"][0]["tokens"])
+
     print("Stats: ", raw_dataset["train"][0]["ner_tags"])
+    f = list(filter(lambda x: x[0] != 0, zip(raw_dataset["train"][0]["ner_tags"], raw_dataset["train"][0]["tokens"])))
+    aligned_f, tokens_f = zip(*f)
+    print("Before align fix")
+    print(tokens_f)
+    print(aligned_f)
     dataset_feature = raw_dataset["train"].features
     print("Ner tags: ", dataset_feature["ner_tags"])
     ner_labels, id2label, label2id = get_ner_info(raw_dataset)
@@ -118,3 +141,9 @@ def get_ner_info(raw_dataset):
     id2label = {str(i): label for i, label in enumerate(ner_labels)}
     label2id = {value: key for key, value in id2label.items()}
     return ner_labels, id2label, label2id
+
+
+if __name__ == '__main__':
+    from  medical_ner_ds import MedicalNerDataset
+    ds = MedicalNerDataset(data_dir=os.path.join(root, "data"), cache_dir=".")
+    ds.download_and_prepare()
