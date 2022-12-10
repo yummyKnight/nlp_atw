@@ -65,12 +65,7 @@ def prepare():
             parts = val.split(" ")
             for i, part in enumerate(parts):
                 new_ann = ann.copy()
-                if i == 0:
-                    update_tag(new_ann, 's', part)
-                elif i == len(parts) - 1:
-                    update_tag(new_ann, 'e', part)
-                else:
-                    update_tag(new_ann, 'm', part)
+                update_tag(new_ann, 'm', part)
                 new_sample.append(new_ann)
                 if new_ann['tag_name'] not in tags_to_id:
                     max_id += 1

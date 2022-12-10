@@ -34,8 +34,8 @@ def align_labels_and_tokens(word_ids, labels):
             updated_labels.append(-100)
         else:
             label = labels[word_id]
-            # # B-XXX to I-XXX for subwords (Inner entities)
-            # if label % 2 == 1:
+            # B-XXX to I-XXX for subwords (Inner entities)
+            # if label % 3 == 1:
             #     label += 1
             updated_labels.append(label)
     return updated_labels
@@ -47,15 +47,12 @@ def prepare_data(tokenizer):
         "LOADING_SCRIPT_FILES": os.path.join(root, "src/medical_ner_ds.py"),
         "CONFIG_NAME": "clean",
         "DATA_DIR": os.path.join(root, "data"),
-        # "CACHE_DIR": os.path.join(root, "cache_crema"),
     }
     raw_dataset = load_dataset(
         dataset_config["LOADING_SCRIPT_FILES"],
         dataset_config["CONFIG_NAME"],
         data_dir=dataset_config["DATA_DIR"],
-        # cache_dir=dataset_config["CACHE_DIR"]
     )
-    # raw_dataset = load_dataset("conll2003", cache_dir=os.path.join(root, "cached_data"))
     ner_labels, id2label, label2id = get_ner_info(raw_dataset)
     print_ds_statistics(raw_dataset)
     # tokenize
@@ -70,17 +67,6 @@ def prepare_data(tokenizer):
         tokenizer=tokenizer
     )
     return tokenized_dataset, data_collator, ner_labels, id2label, label2id
-
-def check_ner_tags(raw_dataset_train):
-    min_tag = 10
-    max_tag = -1
-    for sen in raw_dataset_train:
-        max_tag = max(max_tag, *sen["ner_tags"])
-        min_tag = min(min_tag, *sen["ner_tags"])
-
-    print("Min tag:", min_tag)
-    print("Max tag:", max_tag)
-
 
 def tokenize_and_align_labels(dataset, tokenizer):
     """ Performs tokenization and aligns all tokens and labels
@@ -117,6 +103,7 @@ def test_tokenizer(raw_dataset, tokenizer):
     print(tokens_f)
     print("Tags without zeros:")
     print(aligned_f)
+
 def print_ds_statistics(raw_dataset):
     print("Upper DS struct:")
     print(raw_dataset)

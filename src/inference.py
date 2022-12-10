@@ -18,7 +18,8 @@ def inference():
         "token-classification", model=model_checkpoint, aggregation_strategy="simple"
     )
 
-    text = "While bismuth compounds (Pepto-Bismol) decreased the number of bowel movements in those with travelers' diarrhea"
+    text = "A Covid with diarrhea"
+
     sample_output = namedEntityRecogniser([text])
     print(sample_output)
 

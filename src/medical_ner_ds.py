@@ -13,8 +13,7 @@ class MedicalNerDataset(GeneratorBasedBuilder):
         data_dir = kwargs["data_dir"]
         self.train_pkl = os.path.join(data_dir, "../data/train.pkl")
         self.val_pkl = os.path.join(data_dir, "../data/val.pkl")
-        self._ner_mapping = {'O': 0, 'B-MED': 1, 'I-MED': 2, 'E-MED': 3, 'B-MEDC': 4, 'I-MEDC': 5, 'E-MEDC': 6,
-                             'B-PAT': 7, 'I-PAT': 8, 'E-PAT': 9}
+        self._ner_mapping = {'O': 0, 'I-MED': 1, 'I-MEDC': 2, 'I-PAT': 3}
         super().__init__(**kwargs)
 
     def _split_generators(self, dl_manager):
@@ -46,8 +45,8 @@ class MedicalNerDataset(GeneratorBasedBuilder):
     def _find_token_by_value(self, ann_values: list, value: str, prev_tag: str, default="O"):
         for i, (ann_v, ann_tag) in enumerate(ann_values):
             if ann_v == value:
-                if not ann_tag.startswith("B") and not prev_tag.startswith("B"):
-                    continue
+                # if not ann_tag.startswith("B") and not prev_tag.startswith("B"):
+                #     continue
                 return ann_values.pop(i)[1]
         return default
 

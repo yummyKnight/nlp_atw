@@ -59,7 +59,7 @@ def train(batch_size=32):
         num_labels=len(ner_labels),
         id2label=id2label,
         label2id=label2id,
-        cache_dir=os.path.join(root, "cached_models_2")
+        cache_dir=os.path.join(root, "cached_models")
     )
     metric = load_metric("seqeval")
 
